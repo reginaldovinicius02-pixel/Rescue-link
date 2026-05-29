@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>UNISA Rescue Link 2.0 — Bombeiros Civis</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--red:#e02020;--red-dark:#b01515;--red-glow:rgba(224,32,32,0.25);--navy:#0d1117;--navy2:#161b27;--navy3:#1e2535;--navy4:#252e42;--blue-card:#1a2340;--green-card:#0f2e2a;--text:#e8edf5;--text-muted:#7a8aa8;--border:rgba(255,255,255,0.07);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--navy);color:var(--text);min-height:100vh;}
+h1,h2,h3,.brand{font-family:'Rajdhani',sans-serif;}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--navy2);}::-webkit-scrollbar-thumb{background:var(--red-dark);border-radius:3px;}
+.app{display:flex;flex-direction:column;min-height:100vh;}
+.page{display:none;flex:1;}
+.page.active{display:flex;flex-direction:column;}
+
+/* NAV */
+nav{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:6px;height:58px;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:10px;margin-right:14px;}
+.nav-logo-box{width:32px;height:32px;background:var(--red);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.nav-logo-text .brand{font-size:13px;color:var(--red);letter-spacing:1px;}
+.nav-logo-text span{font-size:10px;color:var(--text-muted);}
+.nav-btn{background:none;border:none;color:var(--text-muted);font-family:'Inter',sans-serif;font-size:13px;padding:6px 13px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .2s;white-space:nowrap;}
+.nav-btn:hover{background:var(--navy3);color:var(--text);}
+.nav-btn.active-nav{background:var(--navy3);color:var(--text);}
+.nav-btn.primary{background:var(--red);color:#fff;font-weight:600;}
+.nav-btn.primary:hover{background:var(--red-dark);}
+.nav-spacer{flex:1;}
+.nav-user{display:flex;flex-direction:column;align-items:flex-end;margin-right:8px;}
+.nav-user .name{font-size:13px;font-weight:600;}
+.nav-user .role{font-size:10px;color:var(--text-muted);}
+.nav-logout{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;padding:6px;}
+.nav-logout:hover{color:var(--red);}
+
+/* LOGIN */
+.login-bg{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--navy);position:relative;overflow:hidden;}
+.login-bg::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(224,32,32,0.08) 0%,transparent 70%);top:-100px;right:-100px;}
+.login-card{background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:40px;width:100%;max-width:400px;position:relative;z-index:1;}
+.login-logo{display:flex;align-items:center;gap:14px;margin-bottom:32px;}
+.login-logo-box{width:52px;height:52px;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.login-logo-text .brand{font-size:22px;color:var(--red);}
+.login-logo-text p{font-size:12px;color:var(--text-muted);}
+.login-title{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;margin-bottom:4px;}
+.login-sub{font-size:13px;color:var(--text-muted);margin-bottom:28px;}
+.field{margin-bottom:14px;}
+.field label{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:6px;}
+.field input,.field select,.field textarea{width:100%;background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border .2s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--red);}
+.field textarea{resize:vertical;min-height:90px;}
+.field select option{background:var(--navy3);}
+.btn-primary{width:100%;background:var(--red);color:#fff;border:none;border-radius:8px;padding:12px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:background .2s;}
+.btn-primary:hover{background:var(--red-dark);}
+.login-link{text-align:center;margin-top:14px;font-size:13px;color:var(--text-muted);}
+.login-link a{color:var(--red);cursor:pointer;}
+
+/* MAIN */
+.main{flex:1;padding:28px 32px;max-width:1280px;width:100%;margin:0 auto;}
+
+/* DASHBOARD */
+.dash-hero{background:linear-gradient(135deg,var(--red) 0%,#8b0000 100%);border-radius:14px;padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden;}
+.dash-hero::after{content:'🚒';position:absolute;right:32px;top:50%;transform:translateY(-50%);font-size:64px;opacity:.15;}
+.dash-badge{background:rgba(255,255,255,0.2);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;letter-spacing:.5px;}
+.dash-badge::before{content:'';width:7px;height:7px;background:#4fffb0;border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.dash-hero h1{font-size:30px;font-weight:700;color:#fff;margin-bottom:4px;}
+.dash-hero p{font-size:13px;color:rgba(255,255,255,0.75);}
+.dash-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.btn-wh{background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn-wh:hover{background:rgba(255,255,255,0.25);}
+.status-bar{display:flex;align-items:center;gap:14px;background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:10px 18px;margin-bottom:20px;font-size:13px;color:var(--text-muted);}
+.sdot{width:8px;height:8px;background:#4fffb0;border-radius:50%;animation:pulse 2s infinite;}
+.sonline{color:#4fffb0;font-weight:600;font-size:12px;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.stat-card{background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.stat-card .icon{font-size:18px;margin-bottom:6px;}
+.stat-card .val{font-family:'Rajdhani',sans-serif;font-size:34px;font-weight:700;line-height:1;}
+.stat-card .lbl{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.campus-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.campus-card{border-radius:12px;padding:18px;}
+.campus-card.dutra{background:var(--blue-card);border:1px solid rgba(40,100,220,0.2);}
+.campus-card.interlagos{background:var(--green-card);border:1px solid rgba(40,180,120,0.2);}
+.campus-card h3{font-family:'Rajdhani',sans-serif;font-size:15px;display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.campus-stats{display:flex;gap:24px;}
+.campus-stat .n{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;}
+.campus-stat .l{font-size:11px;color:var(--text-muted);}
+.bottom-grid{display:grid;grid-template-columns:1fr 300px;gap:18px;}
+.section-card{background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.sec-hdr h3{font-family:'Rajdhani',sans-serif;font-size:15px;display:flex;align-items:center;gap:8px;}
+.ver-todos{color:var(--red);font-size:12px;cursor:pointer;background:none;border:none;}
+.ficha-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.ficha-item:last-child{border-bottom:none;}
+.ficha-item:hover .fi-nome{color:var(--red);}
+.fi-badge{background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;}
+.fi-info .fi-nome{font-size:13px;font-weight:500;}
+.fi-info .fi-meta{font-size:11px;color:var(--text-muted);}
+.fi-hora{font-size:11px;color:var(--text-muted);margin-left:auto;white-space:nowrap;}
+.quick-actions{display:flex;flex-direction:column;gap:8px;}
+.qa-btn{display:flex;align-items:center;gap:10px;background:var(--navy3);border:1px solid var(--border);border-radius:9px;padding:12px 14px;cursor:pointer;transition:all .2s;color:var(--text);text-align:left;width:100%;}
+.qa-btn:hover{background:var(--navy4);}
+.qa-btn.qa-red{background:var(--red);border-color:var(--red);}
+.qa-btn.qa-red:hover{background:var(--red-dark);}
+.qa-icon{font-size:18px;}
+.qa-text .t{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;}
+.qa-text .s{font-size:11px;color:rgba(200,210,230,0.6);}
+
+/* NOVA FICHA */
+.form-page{max-width:860px;}
+.form-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.form-header h2{font-size:26px;font-weight:700;}
+.form-header p{font-size:13px;color:var(--text-muted);margin-top:2px;}
+.btn-save{background:var(--red);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .2s;white-space:nowrap;}
+.btn-save:hover{background:var(--red-dark);}
+.form-section{background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:14px;}
+.sec-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:7px;padding:10px 14px;background:rgba(224,32,32,0.08);border-radius:7px;margin-bottom:16px;}
+.btn-group{display:flex;flex-wrap:wrap;gap:7px;}
+.btn-toggle{background:var(--navy3);border:1px solid var(--border);color:var(--text-muted);border-radius:7px;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .2s;}
+.btn-toggle:hover{border-color:var(--red);color:var(--text);}
+.btn-toggle.sel{background:var(--red);border-color:var(--red);color:#fff;font-weight:600;}
+.form-row{display:grid;gap:12px;margin-bottom:12px;}
+.col2{grid-template-columns:1fr 1fr;}
+.col3{grid-template-columns:1fr 1fr 1fr;}
+.col4{grid-template-columns:2fr 1fr 1fr 1fr;}
+.vitais-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.vital-card{border-radius:9px;padding:12px;}
+.vital-card.pa{background:rgba(224,32,32,0.1);border:1px solid rgba(224,32,32,0.2);}
+.vital-card.sat{background:rgba(40,140,255,0.1);border:1px solid rgba(40,140,255,0.2);}
+.vital-card.pulso{background:rgba(40,200,120,0.1);border:1px solid rgba(40,200,120,0.2);}
+.vital-card.glasgow{background:rgba(200,160,40,0.1);border:1px solid rgba(200,160,40,0.2);}
+.vital-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text-muted);margin-bottom:5px;}
+.vital-card input{background:transparent;border:none;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:700;width:100%;outline:none;}
+.removal-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.removal-row span{font-size:14px;}
+.removal-btn{background:var(--navy3);border:1px solid var(--border);color:var(--text-muted);border-radius:7px;padding:7px 18px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.removal-btn.sel-sim{background:#16a34a;border-color:#16a34a;color:#fff;}
+.removal-btn.sel-nao{background:var(--red);border-color:var(--red);color:#fff;}
+.removal-detail{background:var(--navy3);border:1px solid var(--border);border-radius:9px;padding:14px;margin-top:12px;}
+
+/* BUSCAR */
+.busca-topo{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;align-items:center;}
+.search-input{flex:1;min-width:180px;background:var(--navy2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;outline:none;transition:border .2s;}
+.search-input:focus{border-color:var(--red);}
+.busca-sel{background:var(--navy2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;cursor:pointer;}
+.busca-sel option{background:var(--navy3);}
+.busca-count{font-size:13px;color:var(--text-muted);margin-bottom:14px;}
+.busca-count strong{color:var(--text);}
+.fichas-list{display:flex;flex-direction:column;gap:10px;}
+.ficha-row{background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border .2s;}
+.ficha-row:hover{border-color:var(--red);}
+.fr-num{font-family:'Rajdhani',sans-serif;font-size:12px;color:var(--text-muted);min-width:50px;}
+.fr-info{flex:1;}
+.fr-info .fn{font-size:14px;font-weight:600;}
+.fr-info .fm{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.fr-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.fr-date{font-size:12px;color:var(--text-muted);}
+.fr-arrow{color:var(--text-muted);font-size:16px;}
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;}
+.badge-red{background:rgba(224,32,32,0.2);color:#ff8888;border:1px solid rgba(224,32,32,0.3);}
+.badge-blue{background:rgba(40,100,220,0.2);color:#88aaff;border:1px solid rgba(40,100,220,0.3);}
+.badge-green{background:rgba(40,180,80,0.2);color:#66cc88;border:1px solid rgba(40,180,80,0.3);}
+
+/* RELATÓRIOS */
+.rel-hdr{margin-bottom:20px;}
+.rel-hdr h2{font-size:26px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.rel-hdr p{font-size:13px;color:var(--text-muted);margin-top:2px;}
+.rel-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.rel-mes-input{background:var(--navy2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;outline:none;}
+.tab-group{display:flex;gap:6px;}
+.tab-btn{background:var(--navy2);border:1px solid var(--border);border-radius:8px;padding:7px 16px;font-size:13px;cursor:pointer;color:var(--text-muted);transition:all .2s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.sel{background:var(--red);border-color:var(--red);color:#fff;font-weight:600;}
+.rel-period-info{margin-left:auto;font-size:12px;color:var(--text-muted);}
+.rel-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.rel-card{background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:18px;display:flex;align-items:center;gap:14px;}
+.rel-card .rc-icon{font-size:24px;}
+.rel-card .rc-val{font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;}
+.rel-card .rc-lbl{font-size:12px;color:var(--text-muted);}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.chart-card{background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.chart-card h3{font-family:'Rajdhani',sans-serif;font-size:14px;display:flex;align-items:center;gap:6px;margin-bottom:16px;}
+/* bar chart */
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:110px;}
+.bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:5px;}
+.bar-fill{width:100%;background:var(--red);border-radius:3px 3px 0 0;min-height:3px;transition:height .6s;}
+.bar-lbl{font-size:10px;color:var(--text-muted);}
+/* pie chart */
+.pie-wrap{display:flex;align-items:center;gap:20px;}
+.pie-canvas{position:relative;width:100px;height:100px;flex-shrink:0;}
+.pie-circle{width:100px;height:100px;border-radius:50%;background:conic-gradient(var(--red) 0% 100%);}
+.pie-legend{display:flex;flex-direction:column;gap:8px;}
+.pie-item{display:flex;align-items:center;gap:8px;font-size:13px;}
+.pie-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+/* fichas periodo */
+.period-table{width:100%;}
+.pt-row{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);gap:12px;cursor:pointer;}
+.pt-row:last-child{border-bottom:none;}
+.pt-row:hover .pt-nome{color:var(--red);}
+.pt-info{flex:1;}
+.pt-nome{font-size:14px;font-weight:500;}
+.pt-sub{font-size:11px;color:var(--text-muted);}
+.pt-right{display:flex;align-items:center;gap:8px;}
+.btn-pdf{background:rgba(224,32,32,0.15);color:#ff8888;border:1px solid rgba(224,32,32,0.3);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;}
+.btn-pdf:hover{background:var(--red);color:#fff;}
+
+/* ADMIN */
+.admin-hdr{margin-bottom:20px;}
+.admin-hdr h2{font-size:26px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.admin-hdr p{font-size:13px;color:var(--text-muted);margin-top:2px;}
+.admin-tabs{display:flex;gap:0;margin-bottom:20px;background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:4px;}
+.atab{background:none;border:none;border-radius:7px;padding:9px 20px;font-size:13px;cursor:pointer;color:var(--text-muted);transition:all .2s;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px;}
+.atab:hover{color:var(--text);}
+.atab.sel{background:var(--red);color:#fff;font-weight:600;}
+.admin-panel{display:none;}
+.admin-panel.active{display:block;}
+/* visao geral */
+.vg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+.vg-card{background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.vg-card .vv{font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;}
+.vg-card .vv.red{color:var(--red);}
+.vg-card .vl{font-size:12px;color:var(--text-muted);margin-top:3px;}
+.distrib{background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.distrib h3{font-family:'Rajdhani',sans-serif;font-size:15px;margin-bottom:14px;}
+.distrib-item{margin-bottom:14px;}
+.distrib-label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;}
+.distrib-bar{height:8px;background:var(--navy3);border-radius:4px;overflow:hidden;}
+.distrib-fill{height:100%;background:var(--red);border-radius:4px;transition:width .6s;}
+.distrib-fill.green{background:#22c55e;}
+/* usuarios */
+.user-list{display:flex;flex-direction:column;gap:0;}
+.user-item{display:flex;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);}
+.user-item:last-child{border-bottom:none;}
+.user-avatar{width:38px;height:38px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;margin-right:12px;flex-shrink:0;}
+.user-info .un{font-size:14px;font-weight:600;}
+.user-info .ue{font-size:12px;color:var(--text-muted);}
+.user-role{margin-left:auto;}
+.tag-admin{background:rgba(224,32,32,0.2);color:#ff8888;border:1px solid rgba(224,32,32,0.3);border-radius:5px;padding:3px 10px;font-size:11px;font-weight:700;}
+.tag-user{background:rgba(40,100,220,0.2);color:#88aaff;border:1px solid rgba(40,100,220,0.3);border-radius:5px;padding:3px 10px;font-size:11px;font-weight:700;}
+/* fichas admin */
+.admin-fichas-filter{display:flex;gap:7px;margin-bottom:16px;}
+.af-btn{background:var(--navy3);border:1px solid var(--border);border-radius:7px;padding:7px 14px;font-size:12px;cursor:pointer;color:var(--text-muted);transition:all .2s;}
+.af-btn:hover{color:var(--text);}
+.af-btn.sel{background:var(--red);border-color:var(--red);color:#fff;font-weight:600;}
+.af-count{font-size:13px;color:var(--text-muted);margin-bottom:12px;}
+.af-row{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;gap:10px;}
+.af-row:last-child{border-bottom:none;}
+.af-row:hover .af-nome{color:var(--red);}
+.af-info{flex:1;}
+.af-nome{font-size:14px;font-weight:500;}
+.af-sub{font-size:11px;color:var(--text-muted);}
+.af-date{font-size:12px;color:var(--text-muted);}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--navy2);border:1px solid var(--border);border-radius:14px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;padding:26px;}
+.modal-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;}
+.modal-close{background:none;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;padding:4px;}
+.modal-close:hover{color:var(--red);}
+.det-sec{margin-bottom:18px;}
+.det-sec h4{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.8px;padding:7px 12px;background:rgba(224,32,32,0.07);border-radius:6px;margin-bottom:10px;}
+.det-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.di .dl{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.di .dv{font-size:13px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:#16a34a;color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;font-weight:600;z-index:999;display:none;}
+.toast.show{display:block;animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+@media(max-width:768px){
+  .stats-grid,.rel-stats,.vg-grid{grid-template-columns:1fr 1fr;}
+  .campus-grid,.bottom-grid,.charts-row{grid-template-columns:1fr;}
+  .vitais-grid,.col3,.col4{grid-template-columns:1fr 1fr;}
+  .main{padding:14px;}
+  nav{padding:0 10px;gap:2px;}
+  .nav-btn span{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- LOGIN -->
+<div class="page active" id="page-login">
+  <div class="login-bg">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="login-logo-box">🚒</div>
+        <div class="login-logo-text">
+          <div class="brand">RESCUE LINK 2.0</div>
+          <p>Bombeiros Civis · UNISA</p>
+        </div>
+      </div>
+      <h2 class="login-title">Entrar no sistema</h2>
+      <p class="login-sub">Acesso restrito à equipe autorizada</p>
+      <div class="field"><label>E-mail</label><input type="email" id="l-email" placeholder="seu@unisa.br"/></div>
+      <div class="field"><label>Senha</label><input type="password" id="l-senha" placeholder="••••••••"/></div>
+      <button class="btn-primary" onclick="doLogin()">🔓 Acessar Sistema</button>
+      <p class="login-link">Não tem conta? <a onclick="goPage('page-register')">Cadastrar-se</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="page" id="page-register">
+  <div class="login-bg">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="login-logo-box">🚒</div>
+        <div class="login-logo-text"><div class="brand">RESCUE LINK 2.0</div><p>Novo cadastro</p></div>
+      </div>
+      <h2 class="login-title">Criar conta</h2>
+      <p class="login-sub">Solicite acesso à equipe</p>
+      <div class="field"><label>Nome completo</label><input type="text" placeholder="Seu nome"/></div>
+      <div class="field"><label>E-mail institucional</label><input type="email" placeholder="seu@unisa.br"/></div>
+      <div class="field"><label>Senha</label><input type="password" placeholder="••••••••"/></div>
+      <div class="field"><label>Campus</label><select><option>Campus Dutra</option><option>Campus Interlagos</option></select></div>
+      <button class="btn-primary" onclick="goPage('page-login')">✅ Solicitar Acesso</button>
+      <p class="login-link"><a onclick="goPage('page-login')">← Voltar ao login</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav id="main-nav" style="display:none;">
+  <div class="nav-logo">
+    <div class="nav-logo-box">🚒</div>
+    <div class="nav-logo-text"><div class="brand">RESCUE LINK 2.0</div><span>Bombeiros Civis · UNISA</span></div>
+  </div>
+  <button class="nav-btn" id="nb-dash" onclick="goMain('dashboard')">📊 <span>Dashboard</span></button>
+  <button class="nav-btn primary" id="nb-nova" onclick="goMain('nova-ficha')">+ <span>Nova Ficha</span></button>
+  <button class="nav-btn" id="nb-buscar" onclick="goMain('buscar')">🔍 <span>Buscar</span></button>
+  <button class="nav-btn" id="nb-rel" onclick="goMain('relatorios')">📈 <span>Relatórios</span></button>
+  <button class="nav-btn" id="nb-admin" onclick="goMain('admin')">⚙️ <span>Admin</span></button>
+  <div class="nav-spacer"></div>
+  <div class="nav-user"><span class="name" id="nav-name">Reginaldo</span><span class="role">Administrador</span></div>
+  <button class="nav-logout" onclick="doLogout()" title="Sair">↪</button>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard">
+  <div class="main">
+    <div class="dash-hero">
+      <div class="dash-badge">UNISA RESCUE LINK 2.0 · OPERACIONAL</div>
+      <h1>Painel de Controle</h1>
+      <p>Bombeiros Civis · Universidade Santo Amaro</p>
+      <div class="dash-actions">
+        <button class="btn-wh" onclick="goMain('nova-ficha')">+ Nova Ficha</button>
+        <button class="btn-wh" onclick="goMain('relatorios')">📈 Relatórios</button>
+        <button class="btn-wh" onclick="goMain('admin')">⚙️ Admin</button>
+      </div>
+    </div>
+    <div class="status-bar">
+      <div class="sdot"></div><span class="sonline">SISTEMA ONLINE</span>
+      <span id="status-date">—</span><span id="status-user">—</span>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="icon">📋</div><div class="val" id="s-total">0</div><div class="lbl">Total de Atendimentos</div></div>
+      <div class="stat-card"><div class="icon">📅</div><div class="val" id="s-mes">0</div><div class="lbl">Este Mês</div></div>
+      <div class="stat-card"><div class="icon">🚑</div><div class="val" id="s-remocao">0</div><div class="lbl">Com Remoção</div></div>
+      <div class="stat-card"><div class="icon">📊</div><div class="val" id="s-taxa">0%</div><div class="lbl">Taxa de Remoção</div></div>
+    </div>
+    <div class="campus-grid">
+      <div class="campus-card dutra">
+        <h3>📍 Campus Dutra</h3>
+        <div class="campus-stats">
+          <div class="campus-stat"><div class="n" id="c-dutra-total">0</div><div class="l">Total</div></div>
+          <div class="campus-stat"><div class="n" id="c-dutra-mes">0</div><div class="l">Este mês</div></div>
+        </div>
+      </div>
+      <div class="campus-card interlagos">
+        <h3>📍 Campus Interlagos</h3>
+        <div class="campus-stats">
+          <div class="campus-stat"><div class="n" id="c-inter-total">0</div><div class="l">Total</div></div>
+          <div class="campus-stat"><div class="n" id="c-inter-mes">0</div><div class="l">Este mês</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-grid">
+      <div class="section-card">
+        <div class="sec-hdr"><h3>⚠️ Últimos Atendimentos</h3><button class="ver-todos" onclick="goMain('buscar')">Ver todos →</button></div>
+        <div id="dash-fichas"><p style="color:var(--text-muted);font-size:13px;">Nenhum atendimento ainda.</p></div>
+      </div>
+      <div class="section-card">
+        <div class="sec-hdr"><h3>⚡ Ações Rápidas</h3></div>
+        <div class="quick-actions">
+          <button class="qa-btn qa-red" onclick="goMain('nova-ficha')"><span class="qa-icon">➕</span><div class="qa-text"><div class="t">Nova Ficha</div><div class="s">Registrar atendimento</div></div></button>
+          <button class="qa-btn" onclick="goMain('buscar')"><span class="qa-icon">🔍</span><div class="qa-text"><div class="t">Buscar Ficha</div><div class="s">Pesquisar registros</div></div></button>
+          <button class="qa-btn" onclick="goMain('relatorios')"><span class="qa-icon">📈</span><div class="qa-text"><div class="t">Relatórios</div><div class="s">Estatísticas</div></div></button>
+          <button class="qa-btn" onclick="goMain('admin')"><span class="qa-icon">⚙️</span><div class="qa-text"><div class="t">Admin</div><div class="s">Gerenciar sistema</div></div></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOVA FICHA -->
+<div class="page" id="page-nova-ficha">
+  <div class="main form-page">
+    <div class="form-header">
+      <div><h2>🔥 Nova Ficha de Atendimento</h2><p>Bombeiros Civis · UNISA · Preencha todos os campos</p></div>
+      <button class="btn-save" onclick="salvarFicha()">💾 Salvar Ficha</button>
+    </div>
+    <div class="form-section">
+      <div class="sec-title">🏛️ Campus</div>
+      <div class="btn-group" id="campus-group">
+        <button class="btn-toggle" onclick="sel('campus-group',this,'f-campus')">Campus Dutra</button>
+        <button class="btn-toggle" onclick="sel('campus-group',this,'f-campus')">Campus Interlagos</button>
+      </div><input type="hidden" id="f-campus"/>
+    </div>
+    <div class="form-section">
+      <div class="sec-title">👤 Tipo de Vítima</div>
+      <div class="btn-group" id="tipo-group">
+        <button class="btn-toggle" onclick="sel('tipo-group',this,'f-tipo')">Aluno</button>
+        <button class="btn-toggle" onclick="sel('tipo-group',this,'f-tipo')">Colaborador</button>
+        <button class="btn-toggle" onclick="sel('tipo-group',this,'f-tipo')">Prestador de Serviço</button>
+        <button class="btn-toggle" onclick="sel('tipo-group',this,'f-tipo')">Outros</button>
+      </div><input type="hidden" id="f-tipo"/>
+    </div>
+    <div class="form-section">
+      <div class="sec-title">📍 Local / Data da Ocorrência</div>
+      <div class="form-row col3">
+        <div class="field" style="margin:0"><label>Local *</label><input id="f-local" type="text" placeholder="Ex: Bloco A, Sala 201..."/></div>
+        <div class="field" style="margin:0"><label>Data *</label><input id="f-data" type="date"/></div>
+        <div class="field" style="margin:0"><label>Horário de Início *</label><input id="f-hora" type="time"/></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="sec-title">👤 Dados da Vítima</div>
+      <div class="form-row" style="margin-bottom:12px;"><div class="field" style="margin:0"><label>Nome Completo *</label><input id="f-nome" type="text" placeholder="Nome completo da vítima"/></div></div>
+      <div class="form-row col3" style="margin-bottom:12px;">
+        <div class="field" style="margin:0"><label>Sexo</label>
+          <div class="btn-group" id="sexo-group">
+            <button class="btn-toggle" onclick="sel('sexo-group',this,'f-sexo')">Masc.</button>
+            <button class="btn-toggle" onclick="sel('sexo-group',this,'f-sexo')">Fem.</button>
+            <button class="btn-toggle" onclick="sel('sexo-group',this,'f-sexo')">Outro</button>
+          </div><input type="hidden" id="f-sexo"/>
+        </div>
+        <div class="field" style="margin:0"><label>Idade</label><input id="f-idade" type="number" placeholder="00" min="0" max="120"/></div>
+        <div class="field" style="margin:0"><label>Data de Nascimento</label><input id="f-nasc" type="date"/></div>
+      </div>
+      <div class="form-row col2" style="margin-bottom:12px;">
+        <div class="field" style="margin:0"><label>Telefone</label><input id="f-tel" type="tel" placeholder="(00) 00000-0000"/></div>
+        <div class="field" style="margin:0"><label>Documento</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <div class="btn-group" id="doc-group" style="flex-shrink:0;">
+              <button class="btn-toggle sel" onclick="selDoc(this,'RA')">RA</button>
+              <button class="btn-toggle" onclick="selDoc(this,'RG')">RG</button>
+              <button class="btn-toggle" onclick="selDoc(this,'CPF')">CPF</button>
+            </div>
+            <input id="f-doc" type="text" placeholder="Número" style="flex:1;background:var(--navy3);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-size:13px;outline:none;"/>
+          </div>
+          <input type="hidden" id="f-doc-tipo" value="RA"/>
+        </div>
+      </div>
+      <div class="form-row" style="margin-bottom:12px;"><div class="field" style="margin:0"><label>Curso / Semestre / Cargo</label><input id="f-curso" type="text" placeholder="Ex: Engenharia Civil — 4º semestre"/></div></div>
+      <div class="form-row" style="margin-bottom:12px;"><div class="field" style="margin:0"><label>Endereço</label><input id="f-end" type="text" placeholder="Rua, número, complemento"/></div></div>
+      <div class="form-row col3">
+        <div class="field" style="margin:0"><label>Bairro</label><input id="f-bairro" type="text" placeholder="Bairro"/></div>
+        <div class="field" style="margin:0"><label>Cidade</label><input id="f-cidade" type="text" placeholder="Cidade"/></div>
+        <div class="field" style="margin:0"><label>CEP</label><input id="f-cep" type="text" placeholder="00000-000"/></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="sec-title">❤️ Sinais Vitais</div>
+      <div class="vitais-grid">
+        <div class="vital-card pa"><div class="vital-label">❤️ Pressão Arterial</div><input id="f-pa" placeholder="120/80 mmHg"/></div>
+        <div class="vital-card sat"><div class="vital-label">💧 Saturação O₂</div><input id="f-sat" placeholder="98%"/></div>
+        <div class="vital-card pulso"><div class="vital-label">💚 Pulso</div><input id="f-pulso" placeholder="72 bpm"/></div>
+        <div class="vital-card glasgow"><div class="vital-label">⚡ Glasgow</div><input id="f-glasgow" type="number" placeholder="15" min="3" max="15"/></div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="sec-title">📋 Descrição da Ocorrência</div>
+      <div class="field" style="margin:0"><textarea id="f-descricao" rows="4" placeholder="Descreva a ocorrência com detalhes (o que aconteceu, onde, condições da vítima)..."></textarea><button class="btn-corrigir" onclick="corrigirTexto('f-descricao',this)">✨ Corrigir com IA</button></div>
+    </div>
+    <div class="form-section">
+      <div class="sec-title">🔥 Procedimento do Bombeiro</div>
+      <div class="field" style="margin:0"><textarea id="f-procedimento" rows="4" placeholder="Descreva os procedimentos realizados pelo bombeiro civil..."></textarea><button class="btn-corrigir" onclick="corrigirTexto('f-procedimento',this)">✨ Corrigir com IA</button></div>
+      <div class="field" style="margin-top:12px;"><label>Bombeiro Responsável / Assinatura</label><input id="f-bombeiro" type="text" placeholder="Nome completo do bombeiro responsável"/></div>
+    </div>
+    <div class="form-section">
+      <div class="sec-title">🚑 Remoção Hospitalar</div>
+      <div class="removal-row">
+        <span>Necessidade de remoção hospitalar?</span>
+        <button class="removal-btn" id="rb-sim" onclick="setRemocao('sim')">SIM</button>
+        <button class="removal-btn" id="rb-nao" onclick="setRemocao('nao')">NÃO</button>
+      </div>
+      <input type="hidden" id="f-remocao"/>
+      <div class="removal-detail" id="removal-detail" style="display:none;">
+        <div class="form-row col2" style="margin-bottom:10px;">
+          <div class="field" style="margin:0"><label>Tipo de Transporte</label>
+            <select id="f-transporte"><option value="">Selecionar</option><option>DEZ Emergência</option><option>SAMU</option><option>Resgate 193</option><option>Meios Próprios</option><option>Medi-Car</option></select>
+          </div>
+          <div class="field" style="margin:0"><label>Hospital / UPA de Destino</label><input id="f-hospital" type="text" placeholder="Nome do hospital"/></div>
+        </div>
+        <div class="form-row col3" style="margin-bottom:10px;">
+          <div class="field" style="margin:0"><label>Horário da Saída</label><input id="f-hora-saida" type="time"/></div>
+          <div class="field" style="margin:0"><label>Ambulância Nº</label><input id="f-ambulancia" type="text" placeholder="Placa ou N/C"/></div>
+          <div class="field" style="margin:0"><label>Responsável</label><input id="f-responsavel" type="text" placeholder="Nome"/></div>
+        </div>
+        <div class="form-row col3">
+          <div class="field" style="margin:0"><label>COREN/CRM</label><input id="f-coren" type="text" placeholder="Número"/></div>
+          <div class="field" style="margin:0"><label>Acompanhante</label><input id="f-acomp" type="text" placeholder="Nome"/></div>
+          <div class="field" style="margin:0"><label>Grau de Parentesco</label><input id="f-parentesco" type="text" placeholder="Ex: Amigo(a)"/></div>
+        </div>
+      </div>
+    </div>
+    <div class="form-section">
+      <div class="sec-title">📝 Observações</div>
+      <div class="field" style="margin:0"><textarea id="f-obs" rows="3" placeholder="Observações adicionais relevantes..."></textarea><button class="btn-corrigir" onclick="corrigirTexto('f-obs',this)">✨ Corrigir com IA</button></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;padding-bottom:40px;">
+      <button class="btn-save" style="padding:13px 30px;font-size:16px;" onclick="salvarFicha()">💾 Salvar Ficha</button>
+    </div>
+  </div>
+</div>
+
+<!-- BUSCAR -->
+<div class="page" id="page-buscar">
+  <div class="main">
+    <h2 style="font-size:26px;margin-bottom:6px;">🔍 Buscar Fichas</h2>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Consulte atendimentos anteriores</p>
+    <div style="background:var(--navy2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:6px;margin-bottom:12px;">🔽 FILTROS</div>
+      <div class="busca-topo">
+        <input class="search-input" id="busca-input" type="text" placeholder="🔍 Nome ou local..." oninput="renderBusca()"/>
+        <select class="busca-sel" id="busca-tipo" onchange="renderBusca()">
+          <option value="">Todos os tipos</option>
+          <option>Aluno</option><option>Colaborador</option><option>Prestador de Serviço</option><option>Outros</option>
+        </select>
+        <input class="busca-sel" id="busca-data" type="date" onchange="renderBusca()" style="color:var(--text-muted);"/>
+      </div>
+    </div>
+    <div class="busca-count" id="busca-count"></div>
+    <div class="fichas-list" id="fichas-list"></div>
+  </div>
+</div>
+
+<!-- RELATÓRIOS -->
+<div class="page" id="page-relatorios">
+  <div class="main">
+    <div class="rel-hdr">
+      <h2>📊 Relatórios e Estatísticas</h2>
+      <p>Análise de atendimentos · UNISA Rescue Link</p>
+    </div>
+    <div class="rel-controls">
+      <input class="rel-mes-input" id="rel-mes" type="month" onchange="renderRel()"/>
+      <div class="tab-group" id="rel-campus-tabs">
+        <button class="tab-btn sel" onclick="selRelCampus(this,'')">Todos</button>
+        <button class="tab-btn" onclick="selRelCampus(this,'Campus Dutra')">Campus Dutra</button>
+        <button class="tab-btn" onclick="selRelCampus(this,'Campus Interlagos')">Campus Interlagos</button>
+      </div>
+      <span class="rel-period-info" id="rel-period-info"></span>
+    </div>
+    <div class="rel-stats">
+      <div class="rel-card"><span class="rc-icon">📋</span><div><div class="rc-val" id="r-total">0</div><div class="rc-lbl">Atendimentos</div></div></div>
+      <div class="rel-card"><span class="rc-icon">🚑</span><div><div class="rc-val" id="r-remocoes">0</div><div class="rc-lbl">Com Remoção</div></div></div>
+      <div class="rel-card"><span class="rc-icon">📍</span><div><div class="rc-val" id="r-dutra">0</div><div class="rc-lbl">Campus Dutra</div></div></div>
+      <div class="rel-card"><span class="rc-icon">📍</span><div><div class="rc-val" id="r-inter">0</div><div class="rc-lbl">Campus Interlagos</div></div></div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3>📈 Evolução dos Últimos 6 Meses</h3>
+        <div class="bar-chart" id="chart-bars"></div>
+      </div>
+      <div class="chart-card">
+        <h3>👥 Atendimentos por Tipo de Vítima</h3>
+        <div class="pie-wrap" id="pie-wrap">
+          <div style="color:var(--text-muted);font-size:13px;">Sem dados ainda.</div>
+        </div>
+      </div>
+    </div>
+    <div class="section-card">
+      <div class="sec-hdr"><h3>📋 Fichas no Período Selecionado</h3></div>
+      <div id="period-fichas"><p style="color:var(--text-muted);font-size:13px;">Nenhuma ficha no período.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="page-admin">
+  <div class="main">
+    <div class="admin-hdr">
+      <h2>🛡️ Painel Administrativo</h2>
+      <p>Gestão completa do sistema UNISA Rescue Link</p>
+    </div>
+    <div class="admin-tabs">
+      <button class="atab sel" onclick="setAdminTab(this,'vg')">📊 Visão Geral</button>
+      <button class="atab" onclick="setAdminTab(this,'usuarios')">👥 Usuários</button>
+      <button class="atab" onclick="setAdminTab(this,'fichas')">📋 Fichas</button>
+    </div>
+    <!-- VISÃO GERAL -->
+    <div class="admin-panel active" id="ap-vg">
+      <div class="vg-grid">
+        <div class="vg-card"><div class="vv" id="vg-total">0</div><div class="vl">Total de Fichas</div></div>
+        <div class="vg-card"><div class="vv" id="vg-dutra">0</div><div class="vl">Campus Dutra</div></div>
+        <div class="vg-card"><div class="vv" id="vg-inter">0</div><div class="vl">Campus Interlagos</div></div>
+        <div class="vg-card"><div class="vv" id="vg-rem">0</div><div class="vl">Remoções</div></div>
+        <div class="vg-card"><div class="vv">1</div><div class="vl">Usuários</div></div>
+        <div class="vg-card"><div class="vv red" id="vg-taxa">0%</div><div class="vl">Taxa Remoção</div></div>
+      </div>
+      <div class="distrib">
+        <h3>Distribuição por Campus</h3>
+        <div class="distrib-item">
+          <div class="distrib-label"><span>Campus Dutra</span><span id="db-dutra">0</span></div>
+          <div class="distrib-bar"><div class="distrib-fill" id="df-dutra" style="width:0%"></div></div>
+        </div>
+        <div class="distrib-item">
+          <div class="distrib-label"><span>Campus Interlagos</span><span id="db-inter">0</span></div>
+          <div class="distrib-bar"><div class="distrib-fill green" id="df-inter" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+    <!-- USUÁRIOS -->
+    <div class="admin-panel" id="ap-usuarios">
+      <div class="section-card">
+        <div class="sec-hdr"><h3>👥 Usuários do Sistema</h3><span id="user-count" style="font-size:12px;color:var(--text-muted);">(1)</span></div>
+        <div class="user-list" id="user-list"></div>
+      </div>
+    </div>
+    <!-- FICHAS -->
+    <div class="admin-panel" id="ap-fichas">
+      <div class="section-card">
+        <div class="admin-fichas-filter" id="af-filter">
+          <button class="af-btn sel" onclick="setAfFiltro(this,'')">Todos</button>
+          <button class="af-btn" onclick="setAfFiltro(this,'Campus Dutra')">Campus Dutra</button>
+          <button class="af-btn" onclick="setAfFiltro(this,'Campus Interlagos')">Campus Interlagos</button>
+        </div>
+        <div class="af-count" id="af-count"></div>
+        <div id="af-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-content"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════ ESTADO ═══════════════════════════
+let fichas = JSON.parse(localStorage.getItem('rescue_fichas')||'[]');
+let relCampusFiltro = '';
+let afFiltro = '';
+function save(){ localStorage.setItem('rescue_fichas', JSON.stringify(fichas)); }
+
+// ═══════════════════════════ NAVEGAÇÃO ═══════════════════════════
+function goPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const isAuth = !['page-login','page-register'].includes(id);
+  document.getElementById('main-nav').style.display = isAuth?'flex':'none';
+  // highlight nav
+  ['nb-dash','nb-nova','nb-buscar','nb-rel','nb-admin'].forEach(b=>{
+    const el=document.getElementById(b);
+    if(el) el.classList.remove('active-nav');
+  });
+  const map={dashboard:'nb-dash','nova-ficha':'nb-nova',buscar:'nb-buscar',relatorios:'nb-rel',admin:'nb-admin'};
+  const sec = id.replace('page-','');
+  if(map[sec]) document.getElementById(map[sec])?.classList.add('active-nav');
+}
+
+function goMain(sec){
+  goPage('page-'+sec);
+  if(sec==='dashboard') updateDash();
+  if(sec==='buscar') renderBusca();
+  if(sec==='relatorios') renderRel();
+  if(sec==='admin') renderAdmin();
+}
+
+// ═══════════════════════════ AUTH ═══════════════════════════
+function doLogin(){
+  document.getElementById('chat-fab').style.display='flex';
+  const e=document.getElementById('l-email').value;
+  const s=document.getElementById('l-senha').value;
+  if(!e||!s){alert('Preencha e-mail e senha.');return;}
+  const nome = e.split('@')[0].replace(/\./g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  document.getElementById('nav-name').textContent = nome;
+  goMain('dashboard');
+}
+function doLogout(){ document.getElementById('chat-fab').style.display='none'; document.getElementById('chatbot-window').style.display='none'; chatAberto=false; chatHistory=[]; document.getElementById('chat-messages').innerHTML=''; goPage('page-login'); }
+
+// ═══════════════════════════ TOGGLES ═══════════════════════════
+function sel(groupId, btn, hiddenId){
+  document.querySelectorAll('#'+groupId+' .btn-toggle').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  const h=document.getElementById(hiddenId);
+  if(h) h.value = btn.textContent.trim();
+}
+function selDoc(btn, val){
+  document.querySelectorAll('#doc-group .btn-toggle').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.getElementById('f-doc-tipo').value = val;
+}
+function setRemocao(v){
+  document.getElementById('f-remocao').value=v;
+  document.getElementById('rb-sim').className='removal-btn'+(v==='sim'?' sel-sim':'');
+  document.getElementById('rb-nao').className='removal-btn'+(v==='nao'?' sel-nao':'');
+  document.getElementById('removal-detail').style.display=v==='sim'?'block':'none';
+}
+
+// ═══════════════════════════ SALVAR FICHA ═══════════════════════════
+function salvarFicha(){
+  const nome=document.getElementById('f-nome').value.trim();
+  const local=document.getElementById('f-local').value.trim();
+  if(!nome){alert('⚠️ Preencha o nome da vítima.');return;}
+  if(!local){alert('⚠️ Preencha o local da ocorrência.');return;}
+  const f={
+    id:Date.now(), num:fichas.length+1,
+    campus:document.getElementById('f-campus').value||'Não informado',
+    tipo:document.getElementById('f-tipo').value||'Não informado',
+    local, data:document.getElementById('f-data').value,
+    hora:document.getElementById('f-hora').value,
+    nome,
+    sexo:document.getElementById('f-sexo').value,
+    idade:document.getElementById('f-idade').value,
+    nasc:document.getElementById('f-nasc').value,
+    tel:document.getElementById('f-tel').value,
+    docTipo:document.getElementById('f-doc-tipo').value,
+    doc:document.getElementById('f-doc').value,
+    curso:document.getElementById('f-curso').value,
+    endereco:document.getElementById('f-end').value,
+    bairro:document.getElementById('f-bairro').value,
+    cidade:document.getElementById('f-cidade').value,
+    cep:document.getElementById('f-cep').value,
+    pa:document.getElementById('f-pa').value,
+    sat:document.getElementById('f-sat').value,
+    pulso:document.getElementById('f-pulso').value,
+    glasgow:document.getElementById('f-glasgow').value,
+    descricao:document.getElementById('f-descricao').value,
+    procedimento:document.getElementById('f-procedimento').value,
+    bombeiro:document.getElementById('f-bombeiro').value,
+    remocao:document.getElementById('f-remocao').value,
+    transporte:document.getElementById('f-transporte').value,
+    hospital:document.getElementById('f-hospital').value,
+    horaSaida:document.getElementById('f-hora-saida').value,
+    ambulancia:document.getElementById('f-ambulancia').value,
+    responsavel:document.getElementById('f-responsavel').value,
+    coren:document.getElementById('f-coren').value,
+    acomp:document.getElementById('f-acomp').value,
+    parentesco:document.getElementById('f-parentesco').value,
+    obs:document.getElementById('f-obs').value,
+    criadoEm:new Date().toISOString(),
+    criadoPor:document.getElementById('nav-name').textContent
+  };
+  fichas.unshift(f); save();
+  toast('✅ Ficha #'+f.num+' salva com sucesso!');
+  limparForm();
+  setTimeout(()=>goMain('dashboard'),900);
+}
+function limparForm(){
+  ['f-campus','f-tipo','f-local','f-data','f-hora','f-nome','f-sexo','f-idade','f-nasc','f-tel','f-doc','f-curso','f-end','f-bairro','f-cidade','f-cep','f-pa','f-sat','f-pulso','f-glasgow','f-descricao','f-procedimento','f-bombeiro','f-remocao','f-transporte','f-hospital','f-hora-saida','f-ambulancia','f-responsavel','f-coren','f-acomp','f-parentesco','f-obs']
+  .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('.btn-toggle.sel').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('removal-detail').style.display='none';
+  document.getElementById('rb-sim').className='removal-btn';
+  document.getElementById('rb-nao').className='removal-btn';
+  document.getElementById('f-data').value=new Date().toISOString().split('T')[0];
+}
+
+// ═══════════════════════════ DASHBOARD ═══════════════════════════
+function updateDash(){
+  const agora=new Date();
+  const mes=agora.getMonth(), ano=agora.getFullYear();
+  const deste=fichas.filter(f=>{if(!f.data)return false;const d=new Date(f.data+'T00:00');return d.getMonth()===mes&&d.getFullYear()===ano;});
+  const comRem=fichas.filter(f=>f.remocao==='sim');
+  const taxa=fichas.length?Math.round(comRem.length/fichas.length*100):0;
+  document.getElementById('s-total').textContent=fichas.length;
+  document.getElementById('s-mes').textContent=deste.length;
+  document.getElementById('s-remocao').textContent=comRem.length;
+  document.getElementById('s-taxa').textContent=taxa+'%';
+  const dutra=fichas.filter(f=>f.campus==='Campus Dutra');
+  const inter=fichas.filter(f=>f.campus==='Campus Interlagos');
+  document.getElementById('c-dutra-total').textContent=dutra.length;
+  document.getElementById('c-dutra-mes').textContent=deste.filter(f=>f.campus==='Campus Dutra').length;
+  document.getElementById('c-inter-total').textContent=inter.length;
+  document.getElementById('c-inter-mes').textContent=deste.filter(f=>f.campus==='Campus Interlagos').length;
+  const opts={weekday:'long',year:'numeric',month:'long',day:'numeric'};
+  document.getElementById('status-date').textContent=agora.toLocaleDateString('pt-BR',opts);
+  document.getElementById('status-user').textContent=document.getElementById('nav-name').textContent;
+  const cont=document.getElementById('dash-fichas');
+  if(!fichas.length){cont.innerHTML='<p style="color:var(--text-muted);font-size:13px;">Nenhum atendimento ainda.</p>';return;}
+  cont.innerHTML=fichas.slice(0,5).map(f=>`<div class="ficha-item" onclick="openModal(${f.id})"><span class="fi-badge">#${f.num}</span><div class="fi-info"><div class="fi-nome">${f.nome}</div><div class="fi-meta">${f.campus} · ${f.tipo} · ${f.data||'—'}</div></div><span class="fi-hora">${f.hora||''}</span></div>`).join('');
+}
+
+// ═══════════════════════════ BUSCAR ═══════════════════════════
+function renderBusca(){
+  const q=(document.getElementById('busca-input')?.value||'').toLowerCase();
+  const tipo=document.getElementById('busca-tipo')?.value||'';
+  const data=document.getElementById('busca-data')?.value||'';
+  let lista=fichas;
+  if(tipo) lista=lista.filter(f=>f.tipo===tipo);
+  if(data) lista=lista.filter(f=>f.data===data);
+  if(q) lista=lista.filter(f=>(f.nome+f.local+f.campus+f.tipo).toLowerCase().includes(q));
+  document.getElementById('busca-count').innerHTML=`<strong>${lista.length}</strong> ficha${lista.length!==1?'s':''} encontrada${lista.length!==1?'s':''}`;
+  const cont=document.getElementById('fichas-list');
+  if(!lista.length){cont.innerHTML='<p style="color:var(--text-muted);padding:20px 0;">Nenhuma ficha encontrada.</p>';return;}
+  cont.innerHTML=lista.map(f=>`
+    <div class="ficha-row" onclick="openModal(${f.id})">
+      <span class="fr-num">#${f.num}</span>
+      <div class="fr-info"><div class="fn">${f.nome}</div><div class="fm">${f.local||'—'} · ${f.campus}</div></div>
+      <div class="fr-right">
+        <span class="badge badge-blue">${f.tipo}</span>
+        ${f.remocao==='sim'?'<span class="badge badge-red">🚑 Remoção</span>':''}
+        <span class="fr-date">${f.data||'—'} ${f.hora||''}</span>
+      </div>
+      <span class="fr-arrow">›</span>
+    </div>`).join('');
+}
+
+// ═══════════════════════════ RELATÓRIOS ═══════════════════════════
+function selRelCampus(btn, val){
+  document.querySelectorAll('#rel-campus-tabs .tab-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  relCampusFiltro=val;
+  renderRel();
+}
+function renderRel(){
+  const mesInput=document.getElementById('rel-mes');
+  let lista=fichas;
+  if(relCampusFiltro) lista=lista.filter(f=>f.campus===relCampusFiltro);
+  // filter by month
+  if(mesInput.value){
+    const [ano,m]=mesInput.value.split('-').map(Number);
+    lista=lista.filter(f=>{if(!f.data)return false;const d=new Date(f.data+'T00:00');return d.getFullYear()===ano&&d.getMonth()===(m-1);});
+  }
+  document.getElementById('rel-period-info').textContent=lista.length+' registro'+(lista.length!==1?'s':'')+' no período';
+  document.getElementById('r-total').textContent=lista.length;
+  document.getElementById('r-remocoes').textContent=lista.filter(f=>f.remocao==='sim').length;
+  document.getElementById('r-dutra').textContent=lista.filter(f=>f.campus==='Campus Dutra').length;
+  document.getElementById('r-inter').textContent=lista.filter(f=>f.campus==='Campus Interlagos').length;
+  // bar chart 6 meses
+  const agora=new Date(); const meses=[];
+  for(let i=5;i>=0;i--){const d=new Date(agora.getFullYear(),agora.getMonth()-i,1);meses.push({label:d.toLocaleDateString('pt-BR',{month:'short'}),mes:d.getMonth(),ano:d.getFullYear()});}
+  const maxBar=Math.max(1,...meses.map(m=>fichas.filter(f=>{if(!f.data)return false;const d=new Date(f.data+'T00:00');return d.getMonth()===m.mes&&d.getFullYear()===m.ano;}).length));
+  document.getElementById('chart-bars').innerHTML=meses.map(m=>{
+    const n=fichas.filter(f=>{if(!f.data)return false;const d=new Date(f.data+'T00:00');return d.getMonth()===m.mes&&d.getFullYear()===m.ano;}).length;
+    const h=Math.max(3,Math.round(n/maxBar*100));
+    return `<div class="bar-col"><div class="bar-fill" style="height:${h}px" title="${n} atendimento(s)"></div><span class="bar-lbl">${m.label}</span></div>`;
+  }).join('');
+  // pie
+  const tipos=[...new Set(fichas.map(f=>f.tipo))];
+  const cores=['#e02020','#4488ff','#22c55e','#f59e0b','#a855f7'];
+  if(lista.length===0){document.getElementById('pie-wrap').innerHTML='<div style="color:var(--text-muted);font-size:13px;">Sem dados no período.</div>';
+  } else {
+    let total=lista.length; let deg=0;
+    const segs=tipos.map((t,i)=>{const n=lista.filter(f=>f.tipo===t).length;const pct=n/total;return{t,n,pct,cor:cores[i%cores.length]};});
+    let grad='conic-gradient(';
+    segs.forEach(s=>{grad+=`${s.cor} ${Math.round(deg*360)}deg ${Math.round((deg+s.pct)*360)}deg, `;deg+=s.pct;});
+    grad=grad.replace(/,\s*$/,')')||'conic-gradient(var(--red) 0% 100%)';
+    document.getElementById('pie-wrap').innerHTML=`
+      <div class="pie-canvas"><div class="pie-circle" style="background:${grad}"></div></div>
+      <div class="pie-legend">${segs.map(s=>`<div class="pie-item"><div class="pie-dot" style="background:${s.cor}"></div><span>${s.t} <strong>${s.n}</strong></span></div>`).join('')}</div>`;
+  }
+  // fichas periodo
+  const pc=document.getElementById('period-fichas');
+  if(!lista.length){pc.innerHTML='<p style="color:var(--text-muted);font-size:13px;">Nenhuma ficha no período.</p>';return;}
+  pc.innerHTML=lista.map(f=>`
+    <div class="pt-row" onclick="openModal(${f.id})">
+      <div class="pt-info"><div class="pt-nome">${f.nome}</div><div class="pt-sub">${f.local||'—'} · ${f.campus}</div></div>
+      <div class="pt-right">
+        ${f.remocao==='sim'?'<span class="badge badge-red">Remoção</span>':''}
+        <span style="font-size:12px;color:var(--text-muted);">${f.data||'—'}</span>
+        <button class="btn-pdf" onclick="event.stopPropagation();toast('📄 PDF gerado!')">⬇️ PDF</button>
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════ ADMIN ═══════════════════════════
+function setAdminTab(btn, tab){
+  document.querySelectorAll('.atab').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('ap-'+tab).classList.add('active');
+  if(tab==='fichas') renderAfList();
+}
+function renderAdmin(){
+  const total=fichas.length;
+  const dutra=fichas.filter(f=>f.campus==='Campus Dutra').length;
+  const inter=fichas.filter(f=>f.campus==='Campus Interlagos').length;
+  const rem=fichas.filter(f=>f.remocao==='sim').length;
+  const taxa=total?Math.round(rem/total*100):0;
+  document.getElementById('vg-total').textContent=total;
+  document.getElementById('vg-dutra').textContent=dutra;
+  document.getElementById('vg-inter').textContent=inter;
+  document.getElementById('vg-rem').textContent=rem;
+  document.getElementById('vg-taxa').textContent=taxa+'%';
+  // distrib bars
+  const mx=Math.max(1,dutra,inter);
+  document.getElementById('db-dutra').textContent=dutra;
+  document.getElementById('df-dutra').style.width=Math.round(dutra/mx*100)+'%';
+  document.getElementById('db-inter').textContent=inter;
+  document.getElementById('df-inter').style.width=Math.round(inter/mx*100)+'%';
+  // user list
+  const nome=document.getElementById('nav-name').textContent;
+  document.getElementById('user-count').textContent='(1)';
+  document.getElementById('user-list').innerHTML=`
+    <div class="user-item">
+      <div class="user-avatar">${nome.charAt(0)}</div>
+      <div class="user-info"><div class="un">${nome}</div><div class="ue">reginaldovinicius02@gmail.com</div></div>
+      <div class="user-role"><span class="tag-admin">Administrador</span></div>
+    </div>`;
+  renderAfList();
+}
+function setAfFiltro(btn,val){
+  document.querySelectorAll('.af-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  afFiltro=val;
+  renderAfList();
+}
+function renderAfList(){
+  let lista=fichas;
+  if(afFiltro) lista=lista.filter(f=>f.campus===afFiltro);
+  document.getElementById('af-count').textContent=lista.length+' ficha'+(lista.length!==1?'s':'');
+  const cont=document.getElementById('af-list');
+  if(!lista.length){cont.innerHTML='<p style="color:var(--text-muted);font-size:13px;">Nenhuma ficha.</p>';return;}
+  cont.innerHTML=lista.map(f=>`
+    <div class="af-row" onclick="openModal(${f.id})">
+      <div class="af-info"><div class="af-nome">${f.nome}</div><div class="af-sub">${f.local||'—'} · ${f.campus}</div></div>
+      <span class="af-date">${f.data||'—'}</span>
+    </div>`).join('');
+}
+
+// ═══════════════════════════ MODAL ═══════════════════════════
+function openModal(id){
+  const f=fichas.find(x=>x.id===id); if(!f) return;
+  document.getElementById('modal-content').innerHTML=`
+    <div class="modal-hdr">
+      <div>
+        <h2 style="font-size:22px;font-family:'Rajdhani',sans-serif;">Ficha de Atendimento #${f.num}</h2>
+        <p style="font-size:12px;color:var(--text-muted);">Registrado em ${new Date(f.criadoEm).toLocaleString('pt-BR')} por ${f.criadoPor}</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;"><span class="badge badge-blue">${f.tipo}</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+    </div>
+    <div class="det-sec"><h4>📍 Local / Data</h4><div class="det-grid">
+      <div class="di"><div class="dl">Local</div><div class="dv">${f.local||'—'}</div></div>
+      <div class="di"><div class="dl">Campus</div><div class="dv">${f.campus}</div></div>
+      <div class="di"><div class="dl">Data</div><div class="dv">${f.data||'—'}</div></div>
+      <div class="di"><div class="dl">Horário</div><div class="dv">${f.hora||'—'}</div></div>
+    </div></div>
+    <div class="det-sec"><h4>👤 Dados da Vítima</h4><div class="det-grid">
+      <div class="di"><div class="dl">Nome</div><div class="dv">${f.nome}</div></div>
+      <div class="di"><div class="dl">Sexo / Idade</div><div class="dv">${f.sexo||'—'} / ${f.idade||'—'} anos</div></div>
+      <div class="di"><div class="dl">Nascimento</div><div class="dv">${f.nasc||'—'}</div></div>
+      <div class="di"><div class="dl">Telefone</div><div class="dv">${f.tel||'—'}</div></div>
+      <div class="di"><div class="dl">${f.docTipo}</div><div class="dv">${f.doc||'—'}</div></div>
+      <div class="di"><div class="dl">Curso/Cargo</div><div class="dv">${f.curso||'—'}</div></div>
+    </div></div>
+    <div class="det-sec"><h4>❤️ Sinais Vitais</h4><div class="det-grid">
+      <div class="di"><div class="dl">Pressão Arterial</div><div class="dv">${f.pa||'—'}</div></div>
+      <div class="di"><div class="dl">Saturação O₂</div><div class="dv">${f.sat||'—'}</div></div>
+      <div class="di"><div class="dl">Pulso</div><div class="dv">${f.pulso||'—'}</div></div>
+      <div class="di"><div class="dl">Glasgow</div><div class="dv">${f.glasgow||'—'}</div></div>
+    </div></div>
+    <div class="det-sec"><h4>📋 Ocorrência & Procedimento</h4>
+      <div class="di" style="margin-bottom:10px;"><div class="dl">Descrição</div><div class="dv" style="white-space:pre-wrap;font-size:13px;">${f.descricao||'—'}</div></div>
+      <div class="di"><div class="dl">Procedimento do Bombeiro</div><div class="dv" style="white-space:pre-wrap;font-size:13px;">${f.procedimento||'—'}</div></div>
+      ${f.bombeiro?`<div class="di" style="margin-top:8px;"><div class="dl">Bombeiro Responsável</div><div class="dv">${f.bombeiro}</div></div>`:''}
+    </div>
+    ${f.remocao==='sim'?`<div class="det-sec"><h4>🚑 Remoção Hospitalar</h4><div class="det-grid">
+      <div class="di"><div class="dl">Transporte</div><div class="dv">${f.transporte||'—'}</div></div>
+      <div class="di"><div class="dl">Hospital</div><div class="dv">${f.hospital||'—'}</div></div>
+      <div class="di"><div class="dl">Saída</div><div class="dv">${f.horaSaida||'—'}</div></div>
+      <div class="di"><div class="dl">Ambulância</div><div class="dv">${f.ambulancia||'—'}</div></div>
+      <div class="di"><div class="dl">Responsável</div><div class="dv">${f.responsavel||'—'}</div></div>
+      <div class="di"><div class="dl">Acompanhante</div><div class="dv">${f.acomp||'—'} ${f.parentesco?'('+f.parentesco+')':''}</div></div>
+    </div></div>`:''}
+    ${f.obs?`<div class="det-sec"><h4>📝 Observações</h4><div class="dv" style="font-size:13px;white-space:pre-wrap;">${f.obs}</div></div>`:''}
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px;">
+      <button onclick="deletarFicha(${f.id})" style="background:rgba(224,32,32,0.12);color:#ff8888;border:1px solid rgba(224,32,32,0.25);border-radius:7px;padding:8px 14px;font-size:13px;cursor:pointer;">🗑️ Excluir</button>
+      <button class="btn-pdf" style="padding:8px 14px;font-size:13px;" onclick="toast('📄 PDF gerado!')">⬇️ PDF</button>
+      <button class="btn-save" onclick="closeModal()">Fechar</button>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(e){
+  if(!e||e.target===document.getElementById('modal-overlay'))
+    document.getElementById('modal-overlay').classList.remove('open');
+}
+function deletarFicha(id){
+  if(!confirm('Excluir esta ficha?')) return;
+  fichas=fichas.filter(f=>f.id!==id); save();
+  closeModal(); renderBusca(); updateDash(); renderAdmin();
+  toast('🗑️ Ficha excluída.');
+}
+
+// ═══════════════════════════ TOAST ═══════════════════════════
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ═══════════════════════════ IA — CORREÇÃO ORTOGRÁFICA ═══════════════════════════
+async function corrigirTexto(fieldId, btnEl){
+  const campo = document.getElementById(fieldId);
+  const texto = campo.value.trim();
+  if(!texto){ toast('⚠️ Campo vazio.'); return; }
+  btnEl.textContent='⏳ Corrigindo...';
+  btnEl.disabled=true;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:'Você é um assistente de correção ortográfica para relatórios de primeiros socorros dos Bombeiros Civis da UNISA. Corrija apenas erros de ortografia, concordância e pontuação. Mantenha o conteúdo técnico exato. Retorne SOMENTE o texto corrigido, sem explicações, sem aspas, sem prefácio.',
+        messages:[{role:'user',content:texto}]
+      })
+    });
+    const data = await res.json();
+    const corrigido = data.content?.[0]?.text || texto;
+    campo.value = corrigido;
+    toast('✅ Texto corrigido pela IA!');
+  } catch(e){
+    toast('❌ Erro ao conectar com a IA.');
+  }
+  btnEl.textContent='✨ Corrigir com IA';
+  btnEl.disabled=false;
+}
+
+// ═══════════════════════════ CHATBOT ═══════════════════════════
+let chatHistory = [];
+let chatAberto = false;
+
+function toggleChat(){
+  chatAberto = !chatAberto;
+  document.getElementById('chatbot-window').style.display = chatAberto ? 'flex' : 'none';
+  document.getElementById('chat-fab').textContent = chatAberto ? '✕' : '💬';
+  if(chatAberto && chatHistory.length===0){
+    addBotMsg('Olá! Sou o assistente dos Bombeiros Civis UNISA 🚒\n\nPosso te ajudar com:\n• Dúvidas sobre protocolos de primeiros socorros\n• Como preencher a ficha de atendimento\n• Informações sobre remoção hospitalar\n\nComo posso ajudar?');
+  }
+}
+
+function addBotMsg(texto){
+  const box = document.getElementById('chat-messages');
+  box.innerHTML += `<div class="chat-msg bot"><div class="chat-bubble bot-bubble">${texto.replace(/\n/g,'<br>')}</div></div>`;
+  box.scrollTop = box.scrollHeight;
+}
+
+function addUserMsg(texto){
+  const box = document.getElementById('chat-messages');
+  box.innerHTML += `<div class="chat-msg user"><div class="chat-bubble user-bubble">${texto}</div></div>`;
+  box.scrollTop = box.scrollHeight;
+}
+
+async function enviarChat(){
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value='';
+  addUserMsg(msg);
+  chatHistory.push({role:'user',content:msg});
+
+  // Digitando...
+  const box = document.getElementById('chat-messages');
+  const typingId = 'typing-'+Date.now();
+  box.innerHTML += `<div class="chat-msg bot" id="${typingId}"><div class="chat-bubble bot-bubble typing">● ● ●</div></div>`;
+  box.scrollTop = box.scrollHeight;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:`Você é o assistente virtual dos Bombeiros Civis da Universidade Santo Amaro (UNISA). 
+Seu nome é "Resgate IA". Você auxilia a equipe de bombeiros civis com:
+- Protocolos de primeiros socorros
+- Preenchimento correto das fichas de atendimento
+- Dúvidas sobre procedimentos de remoção hospitalar
+- Informações sobre a legislação de bombeiros civis
+- Orientações sobre o sistema Rescue Link 2.0
+
+Responda sempre em português do Brasil, de forma clara, direta e profissional.
+Mantenha respostas objetivas, com no máximo 3 parágrafos.`,
+        messages: chatHistory.slice(-10)
+      })
+    });
+    const data = await res.json();
+    const resposta = data.content?.[0]?.text || 'Desculpe, não consegui processar sua mensagem.';
+    document.getElementById(typingId)?.remove();
+    chatHistory.push({role:'assistant',content:resposta});
+    addBotMsg(resposta);
+  } catch(e){
+    document.getElementById(typingId)?.remove();
+    addBotMsg('❌ Erro de conexão. Tente novamente.');
+  }
+}
+
+// ═══════════════════════════ INIT ═══════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('l-senha')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  const hoje=new Date().toISOString().split('T')[0];
+  if(document.getElementById('f-data')) document.getElementById('f-data').value=hoje;
+  const agora=new Date();
+  const mesVal=agora.getFullYear()+'-'+String(agora.getMonth()+1).padStart(2,'0');
+  const relMes=document.getElementById('rel-mes');
+  if(relMes) relMes.value=mesVal;
+  // Enter no chat
+  document.getElementById('chat-input')?.addEventListener('keydown',e=>{if(e.key==='Enter')enviarChat();});
+});
+</script>
+
+<!-- ═══════════════════════════ CHATBOT UI ═══════════════════════════ -->
+<style>
+.chat-fab{position:fixed;bottom:24px;right:24px;width:52px;height:52px;background:var(--red);border:none;border-radius:50%;color:#fff;font-size:22px;cursor:pointer;z-index:500;box-shadow:0 4px 20px rgba(224,32,32,0.4);display:none;align-items:center;justify-content:center;transition:transform .2s;}
+.chat-fab:hover{transform:scale(1.1);}
+.chatbot-window{position:fixed;bottom:88px;right:24px;width:340px;height:460px;background:var(--navy2);border:1px solid var(--border);border-radius:16px;flex-direction:column;z-index:500;box-shadow:0 8px 40px rgba(0,0,0,0.5);overflow:hidden;}
+.chat-header{background:var(--red);padding:14px 16px;display:flex;align-items:center;gap:10px;}
+.chat-header-avatar{width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.chat-header-info .cht{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:#fff;}
+.chat-header-info .chs{font-size:11px;color:rgba(255,255,255,0.7);}
+.chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{display:flex;}
+.chat-msg.user{justify-content:flex-end;}
+.chat-bubble{max-width:80%;padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.5;}
+.bot-bubble{background:var(--navy3);color:var(--text);border-bottom-left-radius:2px;}
+.user-bubble{background:var(--red);color:#fff;border-bottom-right-radius:2px;}
+.typing{letter-spacing:4px;color:var(--text-muted);}
+.chat-input-row{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border);}
+.chat-input-row input{flex:1;background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;}
+.chat-input-row input:focus{border-color:var(--red);}
+.chat-send{background:var(--red);color:#fff;border:none;border-radius:8px;padding:9px 14px;cursor:pointer;font-size:16px;}
+.chat-send:hover{background:var(--red-dark);}
+/* Correção IA nos campos */
+.ai-field-wrap{position:relative;}
+.btn-corrigir{background:rgba(224,32,32,0.12);color:var(--red);border:1px solid rgba(224,32,32,0.25);border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;margin-top:6px;transition:all .2s;}
+.btn-corrigir:hover{background:rgba(224,32,32,0.22);}
+</style>
+
+<!-- FAB do chat (só aparece após login) -->
+<button class="chat-fab" id="chat-fab" onclick="toggleChat()">💬</button>
+
+<!-- Janela do chat -->
+<div class="chatbot-window" id="chatbot-window" style="display:none;">
+  <div class="chat-header">
+    <div class="chat-header-avatar">🚒</div>
+    <div class="chat-header-info">
+      <div class="cht">Resgate IA</div>
+      <div class="chs">Assistente dos Bombeiros Civis UNISA</div>
+    </div>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chat-input" placeholder="Digite sua dúvida..." />
+    <button class="chat-send" onclick="enviarChat()">➤</button>
+  </div>
+</div>
+
+</body>
+</html>
